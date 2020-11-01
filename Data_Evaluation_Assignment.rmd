@@ -1,0 +1,64 @@
+---
+title: "Data_Evaluation_Assignments"
+author: "19523096_Bakar"
+date: "10/24/2020"
+output: 
+  html_document:
+    df_print: paged
+---
+```{r}
+#LOAD DATASETS
+library("mlbench")
+data("PimaIndiansDiabetes")
+PimaIndiansDiabetes
+nrow(PimaIndiansDiabetes)
+```
+
+```{r}
+#DATA SPLIT
+library(caret)
+set.seed(1)
+
+trainIndex <- createDataPartition(PimaIndiansDiabetes$age, p = 0.6)$Resample1
+
+trainingSet <- PimaIndiansDiabetes[trainIndex, ]
+testingSet <- PimaIndiansDiabetes[-trainIndex, ]
+
+trainingSet
+testingSet
+```
+```{r}
+summary(PimaIndiansDiabetes)
+```
+
+```{r}
+library(caret)
+#K-FOLD CROSS VALIDATION
+train_control <- trainControl(method="cv", number=10)
+
+modelNB <- train(diabetes ~ glucose + insulin, method = "nb", trControl = train_control, data = PimaIndiansDiabetes)
+
+modelNB$resample
+confusionMatrix(modelNB)
+```
+
+```{r}
+library(caret)
+#REPEATED K-FOLD CROSS VALIDATION
+train_control <- trainControl(method="repeatedcv", number=10, repeats=5)
+
+modelNB <- train(diabetes ~ glucose + insulin, method = "nb", trControl = train_control, data = PimaIndiansDiabetes)
+
+modelNB$resample
+confusionMatrix(modelNB)
+```
+
+```{r}
+library(caret)
+#REPEATED K-FOLD CROSS VALIDATION
+train_control <- trainControl(method="LOOCV")
+
+modelNB <- train(diabetes ~ glucose + insulin, method = "nb", trControl = train_control, data = PimaIndiansDiabetes)
+
+modelNB$results
+```
